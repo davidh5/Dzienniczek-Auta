@@ -1,0 +1,11 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools" tools:context=".ListaWymian">
+    <item android:id="@+id/menu_export_txt" android:title="@string/label_menu_export_txt"
+        android:orderInCategory="100" app:showAsAction="never" />
+    <item android:id="@+id/menu_export_db" android:title="@string/label_menu_export_db"
+        android:orderInCategory="100" app:showAsAction="never" />
+    <item android:id="@+id/menu_import_db" android:title="@string/label_menu_import_db"
+        android:orderInCategory="100" app:showAsAction="never" />
+
+</menu>

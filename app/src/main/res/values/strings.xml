@@ -1,0 +1,25 @@
+<resources>
+    <string name="app_name">Dane auta</string>
+    <string name="label_menu_export_txt">Eksportuj bazę danych do  pliku .txt</string>
+    <string name="label_menu_export_db">Eksportuj bazę danych do pliku .db</string>
+    <string name="label_menu_import_db">Importuj bazę danych z pliku .db</string>
+    <string name="title_activity_wybor_auta">Dzienniczek Auta</string>
+    <string name="label_timing_belt">Rozrząd:</string>
+    <string name="label_no_entry">brak wpisu</string>
+    <string name="label_oil_filter">Olej + filtr:</string>
+    <string name="label_air_filter">Filtr powietrza:</string>
+    <string name="label_fuel_filter">Filtr paliwa:</string>
+    <string name="label_cabin_filter">Filtr kabinowy:</string>
+    <string name="label_repairs">Naprawy:</string>
+    <string name="label_oc">OC:</string>
+    <string name="label_inspection">Przegląd:</string>
+    <string name="toast_export_success">Eksportowano bazę danych do pliku .db</string>
+    <string name="toast_import_success">Importowano bazę danych z pliku .db</string>
+    <string name="toast_export_failure">Wystąpił błąd podczas eksportowania bazy danych do pliku .db !!!</string>
+    <string name="toast_import_failure">Wystąpił błąd podczas importowania bazy danych z pliku .db !!!</string>
+    <string name="title_picker">Wybierz plik z bazą danych</string>
+    <string name="toast_wrong_file">Wybrano nieprawidłowy plik bazy danych</string>
+    <string name="label_choose_date">Wprowadź datę</string>
+    <string name="label_choose_date_of_entry">Wprowadź datę wymiany</string>
+    <string name="label_choose_date_of_repair">Wprowadź datę naprawy</string>
+</resources>
