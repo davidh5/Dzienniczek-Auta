@@ -39,7 +39,7 @@ public class WyborAuta extends AppCompatActivity {
     private FileChannel dst = null;
     private String chosenFileToImport = null;
 
-    private String[] tabele = {"rozrzad", "olej_filtr", "filtr_powietrza", "filtr_paliwa", "filtr_kabinowy", "oc", "przeglad"};
+    private String[] tabele = {"rozrzad", "olej_filtr", "filtr_powietrza", "filtr_paliwa", "filtr_kabinowy", "oc", "przeglad", "naprawy"};
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
@@ -74,6 +74,58 @@ public class WyborAuta extends AppCompatActivity {
                 Intent intent = new Intent(context, ListaWymian.class);
                 intent.putExtra("ID_AUTA", id);
                 startActivity(intent);
+            }
+        });
+        listViewAuta.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                final Dialog dialog = new Dialog(context);
+                dialog.setContentView(R.layout.edit_car_dialog);
+                dialog.setTitle("Edycja auta");
+                dialog.show();
+                final long id2 = id;
+
+                Button przyciskUsun = (Button) dialog.findViewById(R.id.button4);
+                przyciskUsun.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        zarzDB.usuwanieWybranegoAuta(String.valueOf(id2));
+                        dialog.dismiss();
+                        pobierzIWyswietlAuta();
+                    }
+                });
+
+                Button przyciskAktualizuj = (Button) dialog.findViewById(R.id.button3);
+                przyciskAktualizuj.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        EditText marka = (EditText) dialog.findViewById(R.id.markaEdit_editDialog);
+                        EditText model = (EditText) dialog.findViewById(R.id.modelEdit_editDialog);
+                        EditText nrRejestracyjny = (EditText) dialog.findViewById(R.id.nrRejestracyjnyEdit_editDialog);
+
+                        if (marka.getText().toString().isEmpty()) {
+                            marka.setError("Nie wpisano marki samochodu");
+                        } else if (model.getText().toString().isEmpty()) {
+                            model.setError("Nie wpisano modelu samochodu");
+                        }else if (nrRejestracyjny.getText().toString().isEmpty()) {
+                            nrRejestracyjny.setError("Nie wpisano numeru rejestracyjnego samochodu");
+                        }
+                            else {
+                            zarzDB.aktualizacjaAuta(String.valueOf(id2), model.getText().toString(), marka.getText().toString(), nrRejestracyjny.getText().toString());
+                            dialog.dismiss();
+                        }
+                        pobierzIWyswietlAuta();
+                    }
+                });
+
+
+                EditText marka = (EditText) dialog.findViewById(R.id.markaEdit_editDialog);
+                EditText model = (EditText) dialog.findViewById(R.id.modelEdit_editDialog);
+                EditText nrRejestracyjny = (EditText) dialog.findViewById(R.id.nrRejestracyjnyEdit_editDialog);
+                marka.setText(zarzDB.pobieranieWybranegoAuta("marka", String.valueOf(id2)));
+                model.setText(zarzDB.pobieranieWybranegoAuta("model", String.valueOf(id2)));
+                nrRejestracyjny.setText(zarzDB.pobieranieWybranegoAuta("nr_rejestracyjny", String.valueOf(id2)));
+                return true;
             }
         });
         pobierzIWyswietlAuta();
@@ -203,8 +255,6 @@ public class WyborAuta extends AppCompatActivity {
             FileOutputStream fOut = new FileOutputStream(file);
             OutputStreamWriter osw = new OutputStreamWriter(fOut);
 
-            osw.write("\r\n      _id; marka; model; nr_rejestracyjny\r\n");
-            osw.flush();
             Cursor c = zarzDB.pobierzTabeleAuta();
             if (c != null) {
                 if (c.moveToFirst()) {
@@ -223,7 +273,6 @@ public class WyborAuta extends AppCompatActivity {
                 c.close();
             }
 
-            osw.write("\r\n_id;przebieg/data_konca;(data_wymiany);idAuta\r\n");
             osw.flush();
             for (String tabela : tabele) {
                 c = zarzDB.pobierzTabele(tabela);
@@ -237,7 +286,12 @@ public class WyborAuta extends AppCompatActivity {
                             if (tabela.equals("oc") || tabela.equals("przeglad")) {
                                 wpis = c.getString(c.getColumnIndex("data_konca"));
                                 osw.write(tabela + ":   " + idWpisu + "; " + wpis + "; " + idAuta + "\r\n");
-                            } else {
+                            } else if (tabela.equals("naprawy")) {
+                                wpis = c.getString(c.getColumnIndex("przebieg"));
+                                String opis = c.getString(c.getColumnIndex("opis"));
+                                data_wymiany = c.getString(c.getColumnIndex("data"));
+                                osw.write(tabela + ":   " + idWpisu + "; " + wpis + "; "+ opis + "; " + data_wymiany + "; " + idAuta + "\r\n");
+                            }  else {
                                 wpis = c.getString(c.getColumnIndex("przebieg"));
                                 data_wymiany = c.getString(c.getColumnIndex("data"));
                                 osw.write(tabela + ":   " + idWpisu + "; " + wpis + "; " + data_wymiany + "; " + idAuta + "\r\n");

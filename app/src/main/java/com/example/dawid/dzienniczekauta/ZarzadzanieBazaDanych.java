@@ -21,21 +21,21 @@ public class ZarzadzanieBazaDanych extends SQLiteOpenHelper {
 
         db.execSQL("CREATE TABLE auta (_id INTEGER PRIMARY KEY autoincrement, marka text NOT NULL, model text NOT NULL, nr_rejestracyjny text NOT NULL);");
 
-        db.execSQL("CREATE TABLE rozrzad (_id INTEGER PRIMARY KEY autoincrement, przebieg integer NOT NULL, data text NOT NULL, id_auta INTEGER, FOREIGN KEY (id_auta) REFERENCES auta(_id));");
+        db.execSQL("CREATE TABLE rozrzad (_id INTEGER PRIMARY KEY autoincrement, przebieg integer NOT NULL, data text NOT NULL, id_auta INTEGER, FOREIGN KEY (id_auta) REFERENCES auta(_id) ON DELETE CASCADE);");
 
-        db.execSQL("CREATE TABLE olej_filtr (_id INTEGER PRIMARY KEY autoincrement, przebieg integer NOT NULL, data text NOT NULL, id_auta INTEGER, FOREIGN KEY (id_auta) REFERENCES auta(_id));");
+        db.execSQL("CREATE TABLE olej_filtr (_id INTEGER PRIMARY KEY autoincrement, przebieg integer NOT NULL, data text NOT NULL, id_auta INTEGER, FOREIGN KEY (id_auta) REFERENCES auta(_id) ON DELETE CASCADE);");
 
-        db.execSQL("CREATE TABLE filtr_powietrza (_id INTEGER PRIMARY KEY autoincrement, przebieg integer NOT NULL, data text NOT NULL,id_auta INTEGER, FOREIGN KEY (id_auta) REFERENCES auta(_id));");
+        db.execSQL("CREATE TABLE filtr_powietrza (_id INTEGER PRIMARY KEY autoincrement, przebieg integer NOT NULL, data text NOT NULL,id_auta INTEGER, FOREIGN KEY (id_auta) REFERENCES auta(_id) ON DELETE CASCADE);");
 
-        db.execSQL("CREATE TABLE filtr_paliwa (_id INTEGER PRIMARY KEY autoincrement, przebieg integer NOT NULL, data text NOT NULL,id_auta INTEGER, FOREIGN KEY (id_auta) REFERENCES auta(_id));");
+        db.execSQL("CREATE TABLE filtr_paliwa (_id INTEGER PRIMARY KEY autoincrement, przebieg integer NOT NULL, data text NOT NULL,id_auta INTEGER, FOREIGN KEY (id_auta) REFERENCES auta(_id) ON DELETE CASCADE);");
 
-        db.execSQL("CREATE TABLE filtr_kabinowy (_id INTEGER PRIMARY KEY autoincrement, przebieg integer NOT NULL, data text NOT NULL,id_auta INTEGER, FOREIGN KEY (id_auta) REFERENCES auta(_id));");
+        db.execSQL("CREATE TABLE filtr_kabinowy (_id INTEGER PRIMARY KEY autoincrement, przebieg integer NOT NULL, data text NOT NULL,id_auta INTEGER, FOREIGN KEY (id_auta) REFERENCES auta(_id) ON DELETE CASCADE);");
 
-        db.execSQL("CREATE TABLE naprawy (_id INTEGER PRIMARY KEY autoincrement, przebieg integer NOT NULL, opis text NOT NULL, data text NOT NULL, id_auta INTEGER, FOREIGN KEY (id_auta) REFERENCES auta(_id));");
+        db.execSQL("CREATE TABLE naprawy (_id INTEGER PRIMARY KEY autoincrement, przebieg integer NOT NULL, opis text NOT NULL, data text NOT NULL, id_auta INTEGER, FOREIGN KEY (id_auta) REFERENCES auta(_id) ON DELETE CASCADE);");
 
-        db.execSQL("CREATE TABLE oc (_id INTEGER PRIMARY KEY autoincrement, data_konca text NOT NULL,id_auta INTEGER, FOREIGN KEY (id_auta) REFERENCES auta(_id));");
+        db.execSQL("CREATE TABLE oc (_id INTEGER PRIMARY KEY autoincrement, data_konca text NOT NULL,id_auta INTEGER, FOREIGN KEY (id_auta) REFERENCES auta(_id) ON DELETE CASCADE);");
 
-        db.execSQL("CREATE TABLE przeglad (_id INTEGER PRIMARY KEY autoincrement, data_konca text NOT NULL,id_auta INTEGER, FOREIGN KEY (id_auta) REFERENCES auta(_id));");
+        db.execSQL("CREATE TABLE przeglad (_id INTEGER PRIMARY KEY autoincrement, data_konca text NOT NULL,id_auta INTEGER, FOREIGN KEY (id_auta) REFERENCES auta(_id) ON DELETE CASCADE);");
     }
 
     @Override
@@ -92,14 +92,14 @@ public class ZarzadzanieBazaDanych extends SQLiteOpenHelper {
     public Cursor pobierzWpis(String co, String tabela, String id) {
         String[] kolumny = {"_id", co};
         SQLiteDatabase db = getReadableDatabase();
-        Cursor kursor = db.query(tabela, kolumny, "id_auta=?", new String[]{id}, null, null, null);
+        Cursor kursor = db.query(tabela, kolumny, "id_auta=?", new String[]{id}, null, null, "_id DESC");
         return kursor;
     }
 
     public Cursor pobierzWpisZdata(String co, String tabela, String id) {
         String[] kolumny = {"_id", co,"data"};
         SQLiteDatabase db = getReadableDatabase();
-        Cursor kursor = db.query(tabela, kolumny, "id_auta=?", new String[]{id}, null, null, null);
+        Cursor kursor = db.query(tabela, kolumny, "id_auta=?", new String[]{id}, null, null, "przebieg DESC");
         return kursor;
     }
 
@@ -108,7 +108,7 @@ public class ZarzadzanieBazaDanych extends SQLiteOpenHelper {
     public Cursor pobierzNaprawe(String id) {
         String[] kolumny = {"_id", "przebieg", "data", "opis" };
         SQLiteDatabase db = getReadableDatabase();
-        Cursor kursor = db.query("naprawy", kolumny, "id_auta=?", new String[]{id}, null, null, null);
+        Cursor kursor = db.query("naprawy", kolumny, "id_auta=?", new String[]{id}, null, null, "przebieg DESC");
         return kursor;
     }
 
@@ -136,6 +136,13 @@ public class ZarzadzanieBazaDanych extends SQLiteOpenHelper {
         return cursor.getString(cursor.getColumnIndex(kolumna));
     }
 
+    public String pobieranieWybranegoAuta(String kolumna, String id) {
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor cursor = db.query("auta", new String[]{kolumna}, "_id=?", new String[]{id}, null, null, null, null);
+        cursor.moveToFirst();
+        return cursor.getString(cursor.getColumnIndex(kolumna));
+    }
+
     //pobieranie daty wymiany na potrzeby wpisania do datepickera w edycji wpisu
     public String pobieranieDatyWybranegoWpisu(String tabela, String id, String id_auta) {
         SQLiteDatabase db = getReadableDatabase();
@@ -147,6 +154,11 @@ public class ZarzadzanieBazaDanych extends SQLiteOpenHelper {
     public void usuwanieWybranegoWpisu(String tabela, String id, String id_auta) {
         SQLiteDatabase db = getWritableDatabase();
         db.delete(tabela, "_id = ? AND id_auta=?", new String[]{id, id_auta});
+    }
+
+    public void usuwanieWybranegoAuta(String id) {
+        SQLiteDatabase db = getWritableDatabase();
+        db.delete("auta", "_id = ?", new String[]{id});
     }
 
     //aktualizacja wpisu na potrzeby edycji wpisu (data wymiany + przebieg)
@@ -167,6 +179,15 @@ public class ZarzadzanieBazaDanych extends SQLiteOpenHelper {
         db.update("naprawy", dodawaneWartosci, "_id=? AND id_auta=?", new String[]{id, id_auta});
     }
 
+    public void aktualizacjaAuta(String id, String modelDoWpisania, String markaDoWpisania, String nrRejestracyjnyDoWpisania) {
+        ContentValues dodawaneWartosci = new ContentValues();
+        dodawaneWartosci.put("marka", markaDoWpisania);
+        dodawaneWartosci.put("model", modelDoWpisania);
+        dodawaneWartosci.put("nr_rejestracyjny", nrRejestracyjnyDoWpisania);
+        SQLiteDatabase db = getWritableDatabase();
+        db.update("auta", dodawaneWartosci, "_id=?", new String[]{id});
+    }
+
     public void aktualizacjaWybranegoWpisuBezPrzebiegu(String tabela, String id, String doWpisania, String id_auta) {
         ContentValues dodawaneWartosci = new ContentValues();
         dodawaneWartosci.put("data_konca", doWpisania);
@@ -178,14 +199,29 @@ public class ZarzadzanieBazaDanych extends SQLiteOpenHelper {
     //pobiera dla wszystkich aut na potrzeby eksportu do txt
     public Cursor pobierzTabele(String tabela) {
         SQLiteDatabase db = getReadableDatabase();
-        String[] kolumny = {"_id", "data_konca", "id_auta"};
-        String[] kolumny2 = {"_id", "przebieg", "id_auta", "data"};
+        String[] kolumnyOcPrzeglad = {"_id", "data_konca", "id_auta"};
+        String[] kolumnyPozostale = {"_id", "przebieg", "id_auta", "data"};
+        String [] kolumnyNaprawy = {"_id", "przebieg", "opis", "data", "id_auta"};
         Cursor kursor = null;
-        if (tabela.equals("oc") || tabela.equals("przeglad")) {
-            kursor = db.query(tabela, kolumny, null, null, null, null, null);
-        } else {
-            kursor = db.query(tabela, kolumny2, null, null, null, null, null);
+        switch (tabela) {
+            case "oc":
+                kursor = db.query(tabela, kolumnyOcPrzeglad, null, null, null, null, "_id DESC");
+                break;
+            case "przeglad":
+                kursor = db.query(tabela, kolumnyOcPrzeglad, null, null, null, null, "_id DESC");
+                break;
+            case "naprawy":
+                kursor = db.query(tabela, kolumnyNaprawy, null, null, null, null, "przebieg DESC");
+                break;
+            default:
+                kursor = db.query(tabela, kolumnyPozostale, null, null, null, null, "przebieg DESC");
+                break;
         }
+//        if (tabela.equals("oc") || tabela.equals("przeglad")) {
+//            kursor = db.query(tabela, kolumny, null, null, null, null, null);
+//        } else {
+//            kursor = db.query(tabela, kolumny2, null, null, null, null, null);
+//        }
 
         return kursor;
     }
@@ -196,4 +232,5 @@ public class ZarzadzanieBazaDanych extends SQLiteOpenHelper {
         Cursor kursor = db.query("auta", kolumny, null, null, null, null, null);
         return kursor;
     }
+
 }

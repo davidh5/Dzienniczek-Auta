@@ -151,7 +151,15 @@ public class ListaWymian extends AppCompatActivity {
                             } else if (przebieg.getText().toString().isEmpty()) {
                                 przebieg.setError("Nie wpisanoe przebiegu");
                             } else {
-                                dataString = String.valueOf(data.getDayOfMonth() + "." + (data.getMonth() + 1) + "." + data.getYear());
+                                String day = String.valueOf(data.getDayOfMonth());
+                                if (day.length()==1) {
+                                    day ="0"+day;
+                                }
+                                String month = String.valueOf(data.getMonth()+1);
+                                if (month.length()==1) {
+                                    month ="0"+month;
+                                }
+                                dataString = day + "." + month + "." + String.valueOf(data.getYear());
                                 zarzDB.aktualizacjaNaprawy(String.valueOf(id2), opis.getText().toString(), dataString, przebieg.getText().toString(), id_auta);
                                 dialog.dismiss();
                             }
@@ -288,13 +296,29 @@ public class ListaWymian extends AppCompatActivity {
                                 if (wpis.getText().toString().isEmpty()) {
                                     wpis.setError("Nie wpisano przebiegu");
                                 } else {
-                                    dataString = String.valueOf(data.getDayOfMonth() + "." + (data.getMonth() + 1) + "." + data.getYear());
+                                    String day = String.valueOf(data.getDayOfMonth());
+                                    if (day.length()==1) {
+                                        day ="0"+day;
+                                    }
+                                    String month = String.valueOf(data.getMonth()+1);
+                                    if (month.length()==1) {
+                                        month ="0"+month;
+                                    }
+                                    dataString = day + "." + month + "." + String.valueOf(data.getYear());
                                     zarzDB.aktualizacjaWybranegoWpisu(nazwaTabeli, String.valueOf(id2), wpis.getText().toString(), dataString, nazwaKolumny, id_auta);
                                     dialog.dismiss();
                                     adapter.changeCursor(zarzDB.pobierzWpisZdata(nazwaKolumny, nazwaTabeli, id_auta));
                                 }
                             } else {
-                                dataString = String.valueOf(data.getDayOfMonth() + "." + (data.getMonth() + 1) + "." + data.getYear());
+                                String day = String.valueOf(data.getDayOfMonth());
+                                if (day.length()==1) {
+                                    day ="0"+day;
+                                }
+                                String month = String.valueOf(data.getMonth()+1);
+                                if (month.length()==1) {
+                                    month ="0"+month;
+                                }
+                                dataString = day + "." + month + "." + String.valueOf(data.getYear());
                                 zarzDB.aktualizacjaWybranegoWpisuBezPrzebiegu(nazwaTabeli, String.valueOf(id2), dataString, id_auta);
                                 dialog.dismiss();
                                 adapter.changeCursor(zarzDB.pobierzWpis(nazwaKolumny, nazwaTabeli, id_auta));
@@ -399,7 +423,15 @@ public class ListaWymian extends AppCompatActivity {
             zapisz.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View view) {
                     String wpis = String.valueOf(wpisET.getText());
-                    String dataString = String.valueOf(data.getDayOfMonth() + "." + (data.getMonth() + 1) + "." + data.getYear());
+                    String day = String.valueOf(data.getDayOfMonth());
+                    if (day.length()==1) {
+                        day ="0"+day;
+                    }
+                    String month = String.valueOf(data.getMonth()+1);
+                    if (month.length()==1) {
+                        month ="0"+month;
+                    }
+                    String dataString = day + "." + month + "." + String.valueOf(data.getYear());
                     if (wpis.isEmpty()) {
                         wpisET.setError("Nie wpisano przebiegu");
                     } else {
@@ -422,7 +454,15 @@ public class ListaWymian extends AppCompatActivity {
                 public void onClick(View view) {
                     String opis = String.valueOf(opisET.getText());
                     String przebieg = String.valueOf(przebiegET.getText());
-                    String dataStringRepair = String.valueOf(dataRepair.getDayOfMonth() + "." + (dataRepair.getMonth() + 1) + "." + dataRepair.getYear());
+                    String day = String.valueOf(dataRepair.getDayOfMonth());
+                    if (day.length()==1) {
+                        day ="0"+day;
+                    }
+                    String month = String.valueOf(dataRepair.getMonth()+1);
+                    if (month.length()==1) {
+                        month ="0"+month;
+                    }
+                    String dataStringRepair = day + "." + month + "." + String.valueOf(dataRepair.getYear());
                     if (opis.isEmpty()) {
                         opisET.setError("Nie wpisano opisu naprawy");
                     } else if (przebieg.isEmpty()) {
@@ -440,7 +480,16 @@ public class ListaWymian extends AppCompatActivity {
             zapisz.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View view) {
                     DatePicker wyborDaty = (DatePicker) dialog.findViewById(R.id.wyborDaty);
-                    String wpis = String.valueOf(wyborDaty.getDayOfMonth() + "." + (wyborDaty.getMonth() + 1) + "." + wyborDaty.getYear());
+                    String day = String.valueOf(wyborDaty.getDayOfMonth());
+                    if (day.length()==1) {
+                        day ="0"+day;
+                    }
+                    String month = String.valueOf(wyborDaty.getMonth()+1);
+                    if (month.length()==1) {
+                        month ="0"+month;
+                    }
+                    String wpis = day + "." + month + "." + String.valueOf(wyborDaty.getYear());
+
                     zarzDB.dodajWpis(wpis, nazwaKolumny, nazwaTabeli, id_auta);
                     dialog.dismiss();
                     pobierzIWyswietlWszystkieWpisyZBD();
@@ -455,8 +504,8 @@ public class ListaWymian extends AppCompatActivity {
     //pobieranie danych na potrrzeby glownego widoku
     public void pobierzIWyswietlWszystkieWpisyZBD() {
         try {
-            k = zarzDB.pobierzWpis("przebieg", "rozrzad", id_auta);
-            k.moveToLast();    //pobiera ostatni wpis
+            k = zarzDB.pobierzWpisZdata("przebieg", "rozrzad", id_auta);
+            k.moveToFirst();    //pobiera ostatni wpis
             //int nr = k.getInt(0); //id wpisu
 
             String rozrzad = k.getString(1);
@@ -468,8 +517,8 @@ public class ListaWymian extends AppCompatActivity {
         }
 
         try {
-            k = zarzDB.pobierzWpis("przebieg", "olej_filtr", id_auta);
-            k.moveToLast();    //pobiera ostatni wpis
+            k = zarzDB.pobierzWpisZdata("przebieg", "olej_filtr", id_auta);
+            k.moveToFirst();    //pobiera ostatni wpis
             //int nr = k.getInt(0); //id wpisu
             String olejFiltr = k.getString(1);
             olejFiltrTV.setText(olejFiltr + " km");
@@ -478,8 +527,8 @@ public class ListaWymian extends AppCompatActivity {
         }
 
         try {
-            k = zarzDB.pobierzWpis("przebieg", "filtr_powietrza", id_auta);
-            k.moveToLast();    //pobiera ostatni wpis
+            k = zarzDB.pobierzWpisZdata("przebieg", "filtr_powietrza", id_auta);
+            k.moveToFirst();    //pobiera ostatni wpis
             //int nr = k.getInt(0); //id wpisu
             String filtrPowietrza = k.getString(1);
             filtrPowietrzaTV.setText(filtrPowietrza + " km");
@@ -488,8 +537,8 @@ public class ListaWymian extends AppCompatActivity {
         }
 
         try {
-            k = zarzDB.pobierzWpis("przebieg", "filtr_paliwa", id_auta);
-            k.moveToLast();    //pobiera ostatni wpis
+            k = zarzDB.pobierzWpisZdata("przebieg", "filtr_paliwa", id_auta);
+            k.moveToFirst();    //pobiera ostatni wpis
             //int nr = k.getInt(0); //id wpisu
             String filtrPaliwa = k.getString(1);
             filtrPaliwaTV.setText(filtrPaliwa + " km");
@@ -498,8 +547,8 @@ public class ListaWymian extends AppCompatActivity {
         }
 
         try {
-            k = zarzDB.pobierzWpis("przebieg", "filtr_kabinowy", id_auta);
-            k.moveToLast();    //pobiera ostatni wpis
+            k = zarzDB.pobierzWpisZdata("przebieg", "filtr_kabinowy", id_auta);
+            k.moveToFirst();    //pobiera ostatni wpis
             //int nr = k.getInt(0); //id wpisu
             String filtrKabinowy = k.getString(1);
             filtrKabinowyTV.setText(filtrKabinowy + " km");
@@ -509,7 +558,7 @@ public class ListaWymian extends AppCompatActivity {
 
         try {
             k = zarzDB.pobierzWpis("data_konca", "oc", id_auta);
-            k.moveToLast();    //pobiera ostatni wpis
+            k.moveToFirst();    //pobiera ostatni wpis
             //int nr = k.getInt(0); //id wpisu
             String oc = k.getString(1);
             ocTV.setText(oc);
@@ -519,7 +568,7 @@ public class ListaWymian extends AppCompatActivity {
 
         try {
             k = zarzDB.pobierzWpis("data_konca", "przeglad", id_auta);
-            k.moveToLast();    //pobiera ostatni wpis
+            k.moveToFirst();    //pobiera ostatni wpis
             //int nr = k.getInt(0); //id wpisu
 
             String przeglad = k.getString(1);
@@ -532,13 +581,13 @@ public class ListaWymian extends AppCompatActivity {
 
         try {
             k = zarzDB.pobierzNaprawe(id_auta);
-            k.moveToLast();    //pobiera ostatni wpis
+            k.moveToFirst();    //pobiera ostatni wpis
             //int nr = k.getInt(0); //id wpisu
 
             String przebiegNaprawy = k.getString(1);
             String dataNaprawy = k.getString(2);
             String opisNaprawy = k.getString(3);
-            naprawaTV.setText(przebiegNaprawy  + " km");
+            naprawaTV.setText(przebiegNaprawy  + " km - " + opisNaprawy);
 
 
         } catch (CursorIndexOutOfBoundsException e) {
